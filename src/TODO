@@ -1,0 +1,8 @@
+copy env textsize if not specified
+in pen xml, replace std size idx w/name
+
+
+rot
+tra
+gf_push(t)
+gf_pop()

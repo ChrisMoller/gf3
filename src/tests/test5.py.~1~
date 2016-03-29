@@ -1,0 +1,1 @@
+gf_pline([ (1,1), (1, 6), (6, 6)], closed = True, intersection=GF_INTERSECT_ARC, radius = 0.5)

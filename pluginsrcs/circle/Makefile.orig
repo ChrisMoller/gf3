@@ -1,0 +1,23 @@
+     CFLAGS = -g
+
+   GTK_INCS = `pkg-config --cflags gtk+-3.0`
+   GTK_LIBS = `pkg-config --libs gtk+-3.0`
+
+       INCS = $(GTK_INCS)
+       LIBS = $(GTK_LIBS)
+
+%.o : %.c
+	gcc $(CFLAGS) $(INCS) -c $<
+
+all :: libcircle.so
+
+libcircle.o : circle.c
+	gcc $(CFLAGS) -c -o $@ -fPIC $(INCS) $<
+
+libcircle.so : libcircle.o
+	gcc -shared -o libcircle.so -Wl,-soname,libcircle.so $^
+
+
+clean :
+	rm -f *.o *.so
+

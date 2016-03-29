@@ -1,0 +1,9 @@
+#ifndef PLUGINIF_H
+#define PLUGINIF_H
+
+void entity_append_circle (void *sheet, gdouble x, gdouble y,
+			   gdouble r, gboolean filled);
+void *get_active_sheet ();
+void force_redraw (void *env);
+
+#endif  /* PLUGINIF_H */

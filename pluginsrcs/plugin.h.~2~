@@ -1,0 +1,15 @@
+#ifndef GGG_H
+#define GGG_H
+
+// ggg-provided services
+
+typedef void (*gfig_cb_fcn) (const char *stuff);
+
+
+// plugin-provided ops
+
+typedef void (*plugin_query) (gchar **name_p, gchar **desc_p,
+			      gchar ***icon_xpm_p);
+typedef void (*plugin_start) (void *sheet);
+
+#endif /* GGG_H */

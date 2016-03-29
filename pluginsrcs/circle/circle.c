@@ -1,0 +1,116 @@
+#include <gtk/gtk.h>
+
+#include "../plugin.h"
+#include "../pluginif.h"
+
+GtkWidget *xitem;
+GtkWidget *yitem;
+GtkWidget *ritem;
+GtkWidget *fitem;
+
+#define USE_CALL_DIRECT
+
+static void
+gtk_plugin_destroy (GtkWidget *object,
+		    gpointer   user_data)
+{
+  gtk_widget_destroy (GTK_WIDGET (user_data));
+}
+
+void
+draw_button_clicked (GtkButton *button,
+		     gpointer   user_data)
+{
+#ifndef USE_CALL_DIRECT	// think about it
+  gfig_cb_fcn gfig_cb = user_data;
+#endif
+  gdouble x = gtk_spin_button_get_value (GTK_SPIN_BUTTON (xitem));
+  gdouble y = gtk_spin_button_get_value (GTK_SPIN_BUTTON (yitem));
+  gdouble r = gtk_spin_button_get_value (GTK_SPIN_BUTTON (ritem));
+  gboolean f = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (fitem));
+
+#ifdef USE_CALL_DIRECT	// think about it
+  entity_append_circle (get_active_sheet (), x, y, r, f);
+  force_redraw (NULL);
+#else
+  (*gfig_cb)(GFIG_OP_APPEND_CIRCLE, x, y, r, f);
+#endif
+}
+
+void
+query_plugin (gchar **name_p, gchar **desc_p, gchar ***icon_xpm_p)
+{
+#include "icons/circle.xpm"
+  if (name_p) *name_p = "Circle";
+  if (desc_p) *desc_p = "A demo pluging that draws circle";
+  if (icon_xpm_p) *icon_xpm_p = circle_xpm;
+}
+
+int
+start_plugin (gfig_cb_fcn gfig_cb)
+{
+  GtkWidget *hbox;
+  GtkWidget *label;
+  
+  GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title (GTK_WINDOW (window), "Circle Demo");
+  gtk_window_set_default_size (GTK_WINDOW (window), 320, 240);
+
+  g_signal_connect (window, "destroy",
+                    G_CALLBACK (gtk_plugin_destroy), window);
+
+  gtk_container_set_border_width (GTK_CONTAINER (window), 10);
+  GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 8);
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 2);
+
+  label = gtk_label_new ("X");
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 2);
+  xitem = gtk_spin_button_new_with_range (0.0, 10.0, 0.05);
+  gtk_box_pack_start (GTK_BOX (hbox), xitem, FALSE, TRUE, 2);
+
+  label = gtk_label_new ("Y");
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 2);
+  yitem = gtk_spin_button_new_with_range (0.0, 10.0, 0.05);
+  gtk_box_pack_start (GTK_BOX (hbox), yitem, FALSE, TRUE, 2);
+  
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 2);
+  
+  label = gtk_label_new ("Radius");
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 2);
+  ritem = gtk_spin_button_new_with_range (0.0, 10.0, 0.05);
+  gtk_box_pack_start (GTK_BOX (hbox), ritem, FALSE, TRUE, 2);
+  
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 2);
+  
+  fitem = gtk_check_button_new_with_label ("Filled");
+  gtk_box_pack_start (GTK_BOX (hbox), fitem, FALSE, TRUE, 2);
+
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 2);
+
+  GtkWidget *button;
+
+  button = gtk_button_new_with_label ("Draw it!");
+  g_signal_connect (button, "clicked",
+                    G_CALLBACK (draw_button_clicked), gfig_cb);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 2);
+
+  button = gtk_button_new_with_label ("Close");
+  g_signal_connect (button, "clicked",
+                    G_CALLBACK (gtk_plugin_destroy), window);
+  gtk_box_pack_start (GTK_BOX (hbox), button, TRUE, TRUE, 2);
+  
+
+  gtk_widget_show_all (window);
+  
+  return 0;
+}

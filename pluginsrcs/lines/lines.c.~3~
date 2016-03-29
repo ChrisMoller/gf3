@@ -1,0 +1,132 @@
+#include <gtk/gtk.h>
+
+#include "../plugin.h"
+
+GtkWidget *xitem;
+GtkWidget *yitem;
+GtkWidget *ritem;
+GtkWidget *fitem;
+
+void entity_append_circle (void *sheet, gdouble x, gdouble y,
+                           gdouble r, gboolean filled);
+
+#if 0
+static void
+ety_activated (GtkEntry *entry, gpointer  user_data)
+{
+  GtkTextBuffer *buffer = user_data;
+  const gchar *text = gtk_entry_get_text (entry);
+  gtk_text_buffer_insert_at_cursor (buffer, text, -1);
+  gtk_text_buffer_insert_at_cursor (buffer, "\n", -1);
+
+  gtk_entry_set_text (entry, "");
+}
+#endif
+
+static void
+gtk_plugin_destroy (GtkWidget *object,
+		    gpointer   user_data)
+{
+  gtk_widget_destroy (object);
+}
+
+void
+draw_button_clicked (GtkButton *button,
+		     gpointer   sheet)
+{
+  gdouble x = gtk_spin_button_get_value (GTK_SPIN_BUTTON (xitem));
+  gdouble y = gtk_spin_button_get_value (GTK_SPIN_BUTTON (yitem));
+  gdouble r = gtk_spin_button_get_value (GTK_SPIN_BUTTON (ritem));
+  gboolean f = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (fitem));
+#if 0
+  g_print ("Click! %g %g %g %d\n",
+	   gtk_spin_button_get_value (GTK_SPIN_BUTTON (xitem)),
+	   gtk_spin_button_get_value (GTK_SPIN_BUTTON (yitem)),
+	   gtk_spin_button_get_value (GTK_SPIN_BUTTON (ritem)),
+	   gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (fitem)));
+#endif
+  entity_append_circle (sheet, x, y, r, f);
+}
+
+void
+query_plugin (gchar **name_p, gchar **desc_p, gchar ***icon_xpm_p)
+{
+  if (name_p) *name_p = "Lines";
+  if (desc_p) *desc_p = "A demo pluging that draws lines";
+  if (icon_xpm_p) *icon_xpm_p = NULL;
+}
+
+int
+start_plugin (void *sheet)		// really sheet_s *
+{
+  GtkWidget *hbox;
+  GtkWidget *label;
+  
+  GtkWidget *window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_default_size (GTK_WINDOW (window), 320, 240);
+
+  g_signal_connect (window, "destroy",
+                    G_CALLBACK (gtk_plugin_destroy), NULL);
+
+  gtk_container_set_border_width (GTK_CONTAINER (window), 10);
+  GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 8);
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 2);
+
+  label = gtk_label_new ("X");
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 2);
+  xitem = gtk_spin_button_new_with_range (0.0, 10.0, 0.05);
+  gtk_box_pack_start (GTK_BOX (hbox), xitem, FALSE, TRUE, 2);
+
+  label = gtk_label_new ("Y");
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 2);
+  yitem = gtk_spin_button_new_with_range (0.0, 10.0, 0.05);
+  gtk_box_pack_start (GTK_BOX (hbox), yitem, FALSE, TRUE, 2);
+  
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 2);
+  
+  label = gtk_label_new ("Radius");
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, TRUE, 2);
+  ritem = gtk_spin_button_new_with_range (0.0, 10.0, 0.05);
+  gtk_box_pack_start (GTK_BOX (hbox), ritem, FALSE, TRUE, 2);
+  
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 2);
+  
+  fitem = gtk_check_button_new_with_label ("Filled");
+  gtk_box_pack_start (GTK_BOX (hbox), fitem, FALSE, TRUE, 2);
+
+  GtkWidget *button = gtk_button_new_with_label ("Draw it!");
+  g_signal_connect (button, "clicked",
+                    G_CALLBACK (draw_button_clicked), NULL);
+  gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, TRUE, 2);
+  
+
+#if 0
+  GtkWidget *scroll = gtk_scrolled_window_new (NULL, NULL);
+  GtkWidget *view = gtk_text_view_new ();
+  gtk_container_set_border_width (GTK_CONTAINER (view), 4);
+  GtkTextBuffer *buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
+
+  gtk_container_add (GTK_CONTAINER (scroll), view);
+  gtk_box_pack_start (GTK_BOX (vbox), scroll, TRUE, TRUE, 2);
+
+  GtkWidget *entry = gtk_entry_new ();
+  g_signal_connect (entry, "activate",
+		    G_CALLBACK (ety_activated), buffer);
+
+  gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 2);
+#endif
+
+  gtk_widget_show_all (window);
+
+  gtk_main ();
+
+  return 0;
+}

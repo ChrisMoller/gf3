@@ -1,0 +1,11 @@
+gf_spw(.05)
+
+gf_text(0,  1,   "M | hello",  txtsize = 0.1, filled = 1, angle = gf_deg(0))
+gf_text(0,  2,   "M | hello",  txtsize = 0.2, filled = 1, angle = gf_deg(0))
+gf_text(0,  3,   "M | hello",  txtsize = 0.3, filled = 1, angle = gf_deg(0))
+gf_text(0,  4,   "M | hello",  txtsize = 0.4, filled = 1, angle = gf_deg(0))
+gf_text(0,  5,   "M | hello",  txtsize = 0.5, filled = 1, angle = gf_deg(0))
+gf_text(0,  6,   "M | hello",  txtsize = 0.6, filled = 1, angle = gf_deg(0))
+gf_text(0,  7,   "M | hello",  txtsize = 0.7, filled = 1, angle = gf_deg(0))
+gf_text(0,  8,   "M | hello",  txtsize = 0.8, filled = 1, angle = gf_deg(0))
+gf_text(0,  9,   "M | hello",  txtsize = 0.9, filled = 1, angle = gf_deg(0))
