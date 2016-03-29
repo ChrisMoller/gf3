@@ -50,3 +50,7 @@ Of course, all the normal Python constructs are available, like:
 for x in range(0, 3):
   gfig.Circle(x,2,1)
 
+
+
+gf3 will also support plugins implemented as shared objects and Python scripts 
+(the above examples are all from test scripts).
